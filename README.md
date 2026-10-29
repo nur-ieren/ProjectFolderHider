@@ -1,4 +1,3 @@
-
 # ProjectFolderHider
 
 A Unity Editor tool for hiding and restoring folders in the Project window.
@@ -63,6 +62,7 @@ nur_ieren
 [X](https://x.com/nur_ieren)
 
 ## Licence
-This project is licensed under the MIT License, see the LICENSE.txt file for details.
+
+This project is licensed under the MIT License. See LICENSE file for details.
 
 [MIT License](https://opensource.org/license/mit)
