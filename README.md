@@ -57,9 +57,7 @@ This project was created to make navigating large Unity projects more convenient
 
 ## Author
 
-nur_ieren
-
-[X](https://x.com/nur_ieren)
+vor_ges
 
 ## Licence
 
