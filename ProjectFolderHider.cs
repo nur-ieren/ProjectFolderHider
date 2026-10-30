@@ -33,6 +33,13 @@ public static class ProjectFolderHider
     static double lastRun;
     static bool warned;
 
+    // ---------- 言語 ----------
+    const string LangKey = "nur_ieren.ProjectFolderHider.Language"; // "ja" or "en"（Unity全体で共通の設定）
+
+    public static bool IsJapanese => EditorPrefs.GetString(LangKey, "ja") == "ja";
+    public static string T(string ja, string en) => IsJapanese ? ja : en;
+    public static void SetLanguage(bool japanese) => EditorPrefs.SetString(LangKey, japanese ? "ja" : "en");
+
     static ProjectFolderHider()
     {
         Load();
@@ -164,7 +171,7 @@ public static class ProjectFolderHider
             var rows = FindField(ds.GetType(), "m_Rows")?.GetValue(ds) as IList<TreeViewItem>;
             if (rows == null)
             {
-                Warn("m_Rows が見つかりません。内部構造が想定と違います。");
+                Warn(T("m_Rows が見つかりません。内部構造が想定と違います。", "m_Rows not found. The internal structure differs from what is expected."));
                 return false;
             }
 
@@ -197,7 +204,7 @@ public static class ProjectFolderHider
         }
         catch (Exception e)
         {
-            Warn("リフレクションに失敗: " + e.Message);
+            Warn(T("リフレクションに失敗: ", "Reflection failed: ") + e.Message);
             return false;
         }
     }
@@ -215,21 +222,35 @@ public class HiddenFoldersWindow : EditorWindow
 {
     Vector2 scroll;
 
-    [MenuItem("nur_ieren/ProjectFolderHider")]
-    static void Open() => GetWindow<HiddenFoldersWindow>("Hidden Folders");
+    [MenuItem("nur_ieren/ProjectFolderHider/Hidden Folders", false, 0)]
+    static void Open() => GetWindow<HiddenFoldersWindow>(ProjectFolderHider.T("隠しフォルダ", "Hidden Folders"));
 
     void OnGUI()
     {
-        if (GUILayout.Button("Show All")) ProjectFolderHider.ShowAll();
+        titleContent = new GUIContent(ProjectFolderHider.T("隠しフォルダ", "Hidden Folders"));
+
+        // 言語切り替え
+        int current = ProjectFolderHider.IsJapanese ? 0 : 1;
+        int selected = GUILayout.Toolbar(current, new[] { "日本語", "English" }, EditorStyles.toolbarButton);
+        if (selected != current) ProjectFolderHider.SetLanguage(selected == 0);
+        EditorGUILayout.Space(4);
+
+        if (GUILayout.Button(ProjectFolderHider.T("すべて表示", "Show All"))) ProjectFolderHider.ShowAll();
+
+        var guids = ProjectFolderHider.HiddenGuids.ToList();
+        if (guids.Count == 0)
+            EditorGUILayout.HelpBox(ProjectFolderHider.T("隠しているフォルダはありません。", "No hidden folders."), MessageType.Info);
 
         scroll = EditorGUILayout.BeginScrollView(scroll);
-        foreach (var guid in ProjectFolderHider.HiddenGuids.ToList())
+        foreach (var guid in guids)
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);
             using (new EditorGUILayout.HorizontalScope())
             {
-                EditorGUILayout.LabelField(string.IsNullOrEmpty(path) ? "(missing) " + guid : path);
-                if (GUILayout.Button("Show", GUILayout.Width(50))) ProjectFolderHider.Show(guid);
+                EditorGUILayout.LabelField(string.IsNullOrEmpty(path)
+                    ? ProjectFolderHider.T("(見つかりません) ", "(missing) ") + guid
+                    : path);
+                if (GUILayout.Button(ProjectFolderHider.T("表示", "Show"), GUILayout.Width(50))) ProjectFolderHider.Show(guid);
             }
         }
         EditorGUILayout.EndScrollView();
