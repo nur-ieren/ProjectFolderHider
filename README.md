@@ -1,5 +1,7 @@
 # ProjectFolderHider
 
+[日本語](README.ja.md)
+
 A Unity Editor tool for hiding and restoring folders in the Project window.
 
 ## Concept
