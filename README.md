@@ -53,10 +53,6 @@ To restore all hidden folders, click `Show All`.
 - The settings file is separate from the asset files and can be excluded from version control if desired.
 - The tool relies on Unity Editor internal APIs through reflection. Changes to Unity's internal Project window implementation may affect compatibility.
 
-## Development
-
-This project was created to make navigating large Unity projects more convenient without removing assets from the project.
-
 ## Author
 
 - nur_ieren
